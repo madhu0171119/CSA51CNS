@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+
+long long modPow(long long base, long long exp, long long mod) {
+    long long result = 1;
+    while (exp > 0) {
+        if (exp % 2 == 1) {
+            result = (result * base) % mod;
+        }
+        base = (base * base) % mod;
+        exp /= 2;
+    }
+    return result;
+}
+
+void diffieHellman(int prime, int primitiveRoot) {
+    int alicePrivate = rand() % prime;
+
+    int bobPrivate = rand() % prime;
+
+    int alicePublic = modPow(primitiveRoot, alicePrivate, prime);
+    int bobPublic = modPow(primitiveRoot, bobPrivate, prime);
+
+    int sharedKeyAlice = modPow(bobPublic, alicePrivate, prime);
+    int sharedKeyBob = modPow(alicePublic, bobPrivate, prime);
+
+    printf("Prime: %d\nPrimitive Root: %d\n\n", prime, primitiveRoot);
+    printf("Alice's private key: %d\nBob's private key: %d\n\n", alicePrivate, bobPrivate);
+    printf("Alice's public key: %d\nBob's public key: %d\n\n", alicePublic, bobPublic);
+    printf("Shared key calculated by Alice: %d\nShared key calculated by Bob: %d\n\n", sharedKeyAlice, sharedKeyBob);
+}
+
+int main() {
+    int prime = 23;
+    int primitiveRoot = 5;
+
+    diffieHellman(prime, primitiveRoot);
+
+    return 0;
+}
