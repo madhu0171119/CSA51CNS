@@ -1,0 +1,40 @@
+#include <stdio.h>
+#include <string.h>
+#include<ctype.h>
+
+
+void vigenereEncrypt(char plainText[], char key[]) {
+    int plainTextLen = strlen(plainText);
+    int keyLen = strlen(key);
+
+    for (int i = 0; i < plainTextLen; i++) {
+        if (plainText[i] != ' ') { 
+            plainText[i] = ((plainText[i] - 'A' + key[i % keyLen] - 'A') % 26) + 'A';
+        }
+    }
+}
+
+int main() {
+    char plainText[100];
+    char key[100];
+
+    printf("Enter the plain text: ");
+    gets(plainText); 
+
+    printf("Enter the key: ");
+    gets(key);
+
+    for (int i = 0; i < strlen(plainText); i++) {
+        plainText[i] = toupper(plainText[i]);
+    }
+
+    for (int i = 0; i < strlen(key); i++) {
+        key[i] = toupper(key[i]);
+    }
+
+    vigenereEncrypt(plainText, key);
+
+    printf("Encrypted text: %s\n", plainText);
+
+    return 0;
+}
