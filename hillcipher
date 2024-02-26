@@ -1,0 +1,88 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
+
+#define MAX 3
+
+
+void inverse(int key[MAX][MAX], int inverseKey[MAX][MAX]) {
+    int det = 0;
+    for (int i = 0; i < MAX; i++) {
+        det = det + (key[0][i] * (key[1][(i + 1) % MAX] * key[2][(i + 2) % MAX] - key[1][(i + 2) % MAX] * key[2][(i + 1) % MAX]));
+    }
+
+    int det_inv = 0;
+    for (int i = 0; i < 26; i++) {
+        if ((det * i) % 26 == 1) {
+            det_inv = i;
+            break;
+        }
+    }
+
+    for (int i = 0; i < MAX; i++) {
+        for (int j = 0; j < MAX; j++) {
+            inverseKey[i][j] = ((key[(j + 1) % MAX][(i + 1) % MAX] * key[(j + 2) % MAX][(i + 2) % MAX]) - (key[(j + 1) % MAX][(i + 2) % MAX] * key[(j + 2) % MAX][(i + 1) % MAX])) % 26;
+            if (inverseKey[i][j] < 0) {
+                inverseKey[i][j] += 26;
+            }
+            inverseKey[i][j] = (inverseKey[i][j] * det_inv) % 26;
+        }
+    }
+}
+
+
+void hillCipherEncrypt(char input[], int key[MAX][MAX]) {
+    int len = strlen(input);
+    int inputMatrix[MAX][1];
+    int resultMatrix[MAX][1];
+
+    for (int i = 0; i < len; i++) {
+        inputMatrix[i][0] = input[i] - 'A';
+    }
+
+    for (int i = 0; i < MAX; i++) {
+        for (int j = 0; j < 1; j++) {
+            resultMatrix[i][j] = 0;
+            for (int k = 0; k < MAX; k++) {
+                resultMatrix[i][j] += key[i][k] * inputMatrix[k][j];
+            }
+            resultMatrix[i][j] = resultMatrix[i][j] % 26;
+        }
+    }
+
+    printf("Encrypted Text: ");
+    for (int i = 0; i < MAX; i++) {
+        printf("%c", resultMatrix[i][0] + 'A');
+    }
+    printf("\n");
+}
+
+int main() {
+    int key[MAX][MAX];
+    int inverseKey[MAX][MAX];
+
+    printf("Enter the 3x3 key matrix for Hill Cipher (in numbers): \n");
+    for (int i = 0; i < MAX; i++) {
+        for (int j = 0; j < MAX; j++) {
+            scanf("%d", &key[i][j]);
+            key[i][j] = key[i][j] % 26;
+        }
+    }
+
+    char input[100];
+    printf("Enter the plaintext (in uppercase): ");
+    scanf("%s", input);
+
+    int len = strlen(input);
+    if (len % MAX != 0) {
+        printf("Input length must be a multiple of %d for Hill Cipher.\n", MAX);
+        return 1;
+    }
+
+    inverse(key, inverseKey);
+
+    hillCipherEncrypt(input, key);
+
+    return 0;
+}
